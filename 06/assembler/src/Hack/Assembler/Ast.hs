@@ -7,8 +7,62 @@ data AInst
   | Const Int
   deriving (Show)
 
+data Dest =
+  M
+  | D
+  | MD
+  | A
+  | AM
+  | AD
+  | AMD deriving(Show)
+
+data Jump =
+  JGT
+  | JEQ
+  | JGE
+  | JLT
+  | JNE
+  | JLE
+  | JMP
+  deriving(Show)
+
+data CompAtom =
+  One
+  | CA
+  | CM
+  | CD
+  deriving (Show)
+
+data Comp =
+  Zero
+  | Atom CompAtom
+  | UnaryMinus CompAtom
+  | NegA
+  | NegM
+  | NegD
+  | DPlusOne
+  | APlusOne
+  | MPlusOne
+  | DMinusOne
+  | AMinusOne
+  | MMinusOne
+  | DPlusA
+  | DMinusA
+  | AMinusD
+  | DAndA
+  | DOrA
+  | DPlusM
+  | DMinusM
+  | MMinusD
+  | DAndM
+  | DOrM
+  deriving(Show)
+
+data CInst = CInst_ {dest :: Maybe Dest, comp:: Comp, jump :: Maybe Jump} deriving(Show)
+
 data Inst
   = AInst AInst
+  | CInst CInst
   deriving (Show)
 
 type Program = [Inst]
