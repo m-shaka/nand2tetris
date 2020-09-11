@@ -1,8 +1,7 @@
-{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Hack.Assembler.Parser (parser) where
 
-import Control.Applicative (Alternative)
 import Control.Monad (void)
 import qualified Data.Text as T
 import Data.Void
@@ -47,10 +46,10 @@ jumpP = do
     fmap (\j -> j <$ string (T.pack $ show j)) [ JGT, JEQ, JGE, JLT, JNE, JLE, JMP ]
 
 binOp :: Comp -> Parser Char -> Parser Char -> Parser Char -> Parser Comp
-binOp cons left op right = cons <$ do
+binOp cons left op right = cons <$ (try $ do
   left
   op
-  right
+  right)
 
 compP :: Parser Comp
 compP = do

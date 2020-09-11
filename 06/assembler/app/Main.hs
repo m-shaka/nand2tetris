@@ -1,10 +1,14 @@
 module Main where
 
 import qualified Data.Text as T
+import Data.Text.IO (readFile)
 import Hack.Assembler.Parser
-import Text.Megaparsec
+import Prelude hiding(readFile)
+import System.Environment (getArgs)
+import Text.Megaparsec ( parseTest )
 
 main :: IO ()
 main = do
-  l <- T.pack <$> getLine
-  parseTest parser l
+  (filePath: _) <- getArgs
+  p <- readFile filePath
+  parseTest parser p
