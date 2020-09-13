@@ -58,7 +58,7 @@ data Comp =
   | DOrM
   deriving(Show)
 
-data CInst = CInst_ {dest :: Maybe Dest, comp:: Comp, jump :: Maybe Jump} deriving(Show)
+type CInst = (Comp, Maybe Dest, Maybe Jump)
 
 data Inst
   = AInst AInst

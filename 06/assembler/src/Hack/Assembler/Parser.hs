@@ -107,7 +107,7 @@ cInst = do
   jump <- optional . try $ do
     void $ lexeme $ char ';'
     lexeme jumpP
-  return CInst_ {..}
+  return (comp, dest, jump)
 
 inst :: Parser Inst
 inst = do
