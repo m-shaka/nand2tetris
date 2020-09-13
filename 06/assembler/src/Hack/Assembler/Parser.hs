@@ -15,8 +15,11 @@ type Parser = Parsec Void T.Text
 lineComment :: Parser ()
 lineComment = L.skipLineComment "//"
 
+scn :: Parser ()
+scn = void $ L.space (space1 <|> void crlf) lineComment empty
+
 lexeme :: Parser a -> Parser a
-lexeme  = L.lexeme $ L.space hspace1 lineComment empty
+lexeme  = L.lexeme scn
 
 label :: Parser T.Text
 label = do
@@ -117,10 +120,7 @@ parser :: Parser Program
 parser = many $ do
     scn
     i <- lexeme inst
-    void newline <|> void crlf <|> eof
-    scn
     return i
-    where scn = void $ L.space (space1 <|> void crlf) lineComment empty
 
 parseAsm :: String -> T.Text -> Either (ParseErrorBundle T.Text Void) Program
 parseAsm srcName input = parse parser srcName input

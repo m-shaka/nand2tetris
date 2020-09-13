@@ -79,10 +79,10 @@ generateLine inst table = case inst of
         (T.concat ["111", generateComp comp, generateDest dest, generateJump jump, "\n"], table)
 
 generate :: Program -> T.Text
-generate p = res
+generate p = T.concat res
     where
         f i (acc, table) =
             let
                 (line, table') = generateLine i table
-            in (mappend line acc, table')
-        (res, _) = foldr f (T.empty, initialTable) p
+            in (line : acc, table')
+        (res, _) = foldr f ([], initialTable) p
