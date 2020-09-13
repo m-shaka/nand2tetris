@@ -39,7 +39,9 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
+extra-deps:
+- megaparsec-9.0.0@sha256:920d1e469056c746b532333a078c2a9a195fab5e860e0c9734ee92a28c2bfb65,3117
+
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
@@ -64,3 +66,4 @@ packages:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+allow-newer: false

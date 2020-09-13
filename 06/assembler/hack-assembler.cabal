@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 07073e8edf3fb7cd753a5860a2a8306b4c11088a0fb83b5ce55be2c9292c2748
+-- hash: ed13c8f323e678d610111363ebfc7bd1294f6e7c9b6626590a309db888cbdf5d
 
 name:           hack-assembler
 version:        0.1.0.0
@@ -36,7 +36,7 @@ library
   default-extensions: OverloadedStrings
   build-depends:
       base >=4.7 && <5
-    , megaparsec
+    , megaparsec >=9.0.0 && <10
     , text
   default-language: Haskell2010
 
@@ -51,7 +51,7 @@ executable hack-assembler-exe
   build-depends:
       base >=4.7 && <5
     , hack-assembler
-    , megaparsec
+    , megaparsec >=9.0.0 && <10
     , text
   default-language: Haskell2010
 
@@ -67,6 +67,6 @@ test-suite hack-assembler-test
   build-depends:
       base >=4.7 && <5
     , hack-assembler
-    , megaparsec
+    , megaparsec >=9.0.0 && <10
     , text
   default-language: Haskell2010

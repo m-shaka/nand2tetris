@@ -1,6 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Hack.Assembler.Parser (parser) where
+module Hack.Assembler.Parser (parseAsm) where
 
 import Control.Monad (void)
 import qualified Data.Text as T
@@ -11,6 +11,12 @@ import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void T.Text
+
+lineComment :: Parser ()
+lineComment = L.skipLineComment "//"
+
+lexeme :: Parser a -> Parser a
+lexeme  = L.lexeme $ L.space hspace1 lineComment empty
 
 label :: Parser T.Text
 label = do
@@ -25,8 +31,8 @@ constant = L.decimal
 
 aInst :: Parser AInst
 aInst = do
-  _ <- char '@'
-  value <- Label <$> label <|> Const <$> constant
+  _ <- lexeme $ char '@'
+  value <- lexeme $ Label <$> label <|> Const <$> constant
   return $ value
 
 destP :: Parser Dest
@@ -47,9 +53,9 @@ jumpP = do
 
 binOp :: Comp -> Parser Char -> Parser Char -> Parser Char -> Parser Comp
 binOp cons left op right = cons <$ (try $ do
-  left
-  op
-  right)
+  lexeme left
+  lexeme op
+  lexeme right)
 
 compP :: Parser Comp
 compP = do
@@ -94,13 +100,13 @@ compP = do
 cInst :: Parser CInst
 cInst = do
   dest <- optional . try $ do
-    d <- destP
-    void $ char '='
+    d <- lexeme destP
+    void $ lexeme $ char '='
     return d
-  comp <- compP
+  comp <- lexeme compP
   jump <- optional . try $ do
-    void $ char ';'
-    jumpP
+    void $ lexeme $ char ';'
+    lexeme jumpP
   return CInst_ {..}
 
 inst :: Parser Inst
@@ -109,6 +115,12 @@ inst = do
 
 parser :: Parser Program
 parser = many $ do
-  i <- inst
-  void newline <|> eof
-  return i
+    scn
+    i <- lexeme inst
+    void newline <|> void crlf <|> eof
+    scn
+    return i
+    where scn = void $ L.space (space1 <|> void crlf) lineComment empty
+
+parseAsm :: String -> T.Text -> Either (ParseErrorBundle T.Text Void) Program
+parseAsm srcName input = parse parser srcName input
