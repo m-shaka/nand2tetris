@@ -7,34 +7,35 @@ data AInst
   | Const Int
   deriving (Show)
 
-data Dest =
-  M
+data Dest
+  = M
   | D
   | MD
   | A
   | AM
   | AD
-  | AMD deriving(Show)
+  | AMD
+  deriving (Show)
 
-data Jump =
-  JGT
+data Jump
+  = JGT
   | JEQ
   | JGE
   | JLT
   | JNE
   | JLE
   | JMP
-  deriving(Show)
+  deriving (Show)
 
-data CompAtom =
-  One
+data CompAtom
+  = One
   | CA
   | CM
   | CD
   deriving (Show)
 
-data Comp =
-  Zero
+data Comp
+  = Zero
   | Atom CompAtom
   | UnaryMinus CompAtom
   | NegA
@@ -56,7 +57,7 @@ data Comp =
   | MMinusD
   | DAndM
   | DOrM
-  deriving(Show)
+  deriving (Show)
 
 type CInst = (Comp, Maybe Dest, Maybe Jump)
 

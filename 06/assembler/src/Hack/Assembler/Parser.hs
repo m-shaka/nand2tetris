@@ -4,7 +4,7 @@ module Hack.Assembler.Parser (parseAsm) where
 
 import Control.Monad (void)
 import qualified Data.Text as T
-import Data.Void
+import Data.Void (Void)
 import Hack.Assembler.Ast
 import Text.Megaparsec hiding (Label, label)
 import Text.Megaparsec.Char
@@ -19,7 +19,7 @@ scn :: Parser ()
 scn = void $ L.space (space1 <|> void crlf) lineComment empty
 
 lexeme :: Parser a -> Parser a
-lexeme  = L.lexeme scn
+lexeme = L.lexeme scn
 
 label :: Parser T.Text
 label = do
@@ -41,52 +41,56 @@ aInst = do
 destP :: Parser Dest
 destP = do
   choice
-    [ AMD <$ string "AMD"
-    , AM <$ string "AM"
-    , AD <$ string "AD"
-    , MD <$ string "MD"
-    , single
+    [ AMD <$ string "AMD",
+      AM <$ string "AM",
+      AD <$ string "AD",
+      MD <$ string "MD",
+      single
     ]
-  where single = choice [M <$ char 'M', D <$ char 'D', A <$ char 'A']
+  where
+    single = choice [M <$ char 'M', D <$ char 'D', A <$ char 'A']
 
 jumpP :: Parser Jump
 jumpP = do
   choice $
-    fmap (\j -> j <$ string (T.pack $ show j)) [ JGT, JEQ, JGE, JLT, JNE, JLE, JMP ]
+    fmap (\j -> j <$ string (T.pack $ show j)) [JGT, JEQ, JGE, JLT, JNE, JLE, JMP]
 
 binOp :: Comp -> Parser Char -> Parser Char -> Parser Char -> Parser Comp
-binOp cons left op right = cons <$ (try $ do
-  lexeme left
-  lexeme op
-  lexeme right)
+binOp cons left op right =
+  cons
+    <$ ( try $ do
+           lexeme left
+           lexeme op
+           lexeme right
+       )
 
 compP :: Parser Comp
 compP = do
   choice
-    [ binOp DPlusOne d plus one
-    , binOp APlusOne a plus one
-    , binOp MPlusOne m plus one
-    , binOp DMinusOne d minus one
-    , binOp AMinusOne a minus one
-    , binOp MMinusOne m minus one
-    , binOp DPlusA d plus a
-    , binOp DMinusA d minus a
-    , binOp AMinusD a minus d
-    , binOp DAndA d and a
-    , binOp DOrA d or d
-    , binOp DPlusM d plus m
-    , binOp DMinusM d minus m
-    , binOp MMinusD m minus d
-    , binOp DAndM d and m
-    , binOp DOrM d or m
-    , Zero <$ zero
-    , Atom <$> atom
-    , UnaryMinus <$> do
-      minus
-      atom
-    , do
-      char '!'
-      choice [NegA <$ a, NegM <$ m, NegD <$ d]
+    [ binOp DPlusOne d plus one,
+      binOp APlusOne a plus one,
+      binOp MPlusOne m plus one,
+      binOp DMinusOne d minus one,
+      binOp AMinusOne a minus one,
+      binOp MMinusOne m minus one,
+      binOp DPlusA d plus a,
+      binOp DMinusA d minus a,
+      binOp AMinusD a minus d,
+      binOp DAndA d and a,
+      binOp DOrA d or d,
+      binOp DPlusM d plus m,
+      binOp DMinusM d minus m,
+      binOp MMinusD m minus d,
+      binOp DAndM d and m,
+      binOp DOrM d or m,
+      Zero <$ zero,
+      Atom <$> atom,
+      UnaryMinus <$> do
+        minus
+        atom,
+      do
+        char '!'
+        choice [NegA <$ a, NegM <$ m, NegD <$ d]
     ]
   where
     zero = char '0'
@@ -118,9 +122,9 @@ inst = do
 
 parser :: Parser Program
 parser = many $ do
-    scn
-    i <- lexeme inst
-    return i
+  scn
+  i <- lexeme inst
+  return i
 
 parseAsm :: String -> T.Text -> Either (ParseErrorBundle T.Text Void) Program
 parseAsm srcName input = parse parser srcName input
