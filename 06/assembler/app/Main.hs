@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Data.List as L
+import qualified Data.Map as Map
 import qualified Data.Text as T
 import Data.Text.IO (readFile, writeFile)
 import Hack.Assembler.Code

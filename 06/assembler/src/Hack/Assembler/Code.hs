@@ -74,11 +74,13 @@ generateLine inst table = case inst of
        in (generateAInst ram, updateTable)
   CInst (comp, dest, jump) ->
     (T.concat ["111", generateComp comp, generateDest dest, generateJump jump, "\n"], table)
+  _ -> ("", table)
 
 generate :: Program -> T.Text
-generate p = T.concat res
+generate p = T.concat $ filter ((/=) "") $ reverse res
   where
-    f i (acc, table) =
+    f (acc, table) i =
       let (line, table') = generateLine i table
        in (line : acc, table')
-    (res, _) = foldr f ([], initialTable) p
+    table = initializeTable p
+    (res, _) = foldl f ([], table) p

@@ -1,10 +1,11 @@
-module Hack.Assembler.SymbolTable (initialTable, lookup, insertRAM, SymbolTable) where
+module Hack.Assembler.SymbolTable (initializeTable, lookup, insertRAM, SymbolTable) where
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
+import Hack.Assembler.Ast
 import Prelude hiding (lookup)
 
-data SymbolTable = SymbolTable (Map.Map T.Text Int) Int
+data SymbolTable = SymbolTable (Map.Map T.Text Int) Int deriving (Show)
 
 builtInSymbols :: [(T.Text, Int)]
 builtInSymbols =
@@ -19,10 +20,13 @@ builtInSymbols =
     ]
     (fmap (\n -> (mappend "R" (T.pack $ show n), n)) [0 .. 15])
 
-initialTable :: SymbolTable
-initialTable = SymbolTable table 16
+initializeTable :: Program -> SymbolTable
+initializeTable p = SymbolTable table 16
   where
-    table = Map.fromList builtInSymbols
+    (table, _) = foldl f (Map.fromList builtInSymbols, 0) p
+    f (table', index) l = case l of
+      LabelSymbol l -> (Map.insert l index table', index)
+      _ -> (table', index + 1)
 
 lookup :: T.Text -> SymbolTable -> Maybe Int
 lookup key (SymbolTable table _) = Map.lookup key table

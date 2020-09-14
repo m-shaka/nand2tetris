@@ -116,9 +116,16 @@ cInst = do
     lexeme jumpP
   return (comp, dest, jump)
 
+labelSymbol :: Parser LabelSymbol
+labelSymbol = do
+  void . lexeme $ char '('
+  l <- lexeme label
+  void . lexeme $ char ')'
+  return l
+
 inst :: Parser Inst
 inst = do
-  choice [AInst <$> aInst, CInst <$> cInst]
+  choice [AInst <$> aInst, CInst <$> cInst, LabelSymbol <$> labelSymbol]
 
 parser :: Parser Program
 parser = many $ do

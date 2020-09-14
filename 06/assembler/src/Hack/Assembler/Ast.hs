@@ -61,9 +61,12 @@ data Comp
 
 type CInst = (Comp, Maybe Dest, Maybe Jump)
 
+type LabelSymbol = Text
+
 data Inst
   = AInst AInst
   | CInst CInst
+  | LabelSymbol LabelSymbol
   deriving (Show)
 
 type Program = [Inst]
