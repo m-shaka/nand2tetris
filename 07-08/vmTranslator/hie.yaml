@@ -1,0 +1,8 @@
+cradle:
+    stack:
+      - path: ./app
+        component: "vmTranslator:lib"
+      - path: ./src
+        component: "vmTranslator:lib"
+      - path: ./test
+        component: "vmTranslator:test:vmTranslator-test"
