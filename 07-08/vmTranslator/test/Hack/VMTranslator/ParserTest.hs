@@ -12,7 +12,10 @@ cmdsWithExpected =
   [ ("push constant 0", Push Constant 0),
     ("pop constant 1", Pop Constant 1),
     ("add", Add),
-    ("eq", Eq)
+    ("eq", Eq),
+    ("label hoge3._:", Label $ T.pack "hoge3._:"),
+    ("function hoge3._: 0", Function (T.pack "hoge3._:") 0),
+    ("return", Return)
   ]
 
 test_single_cmd :: IO TestTree

@@ -1,5 +1,7 @@
 module Hack.VMTranslator.Ast where
 
+import qualified Data.Text as T
+
 data Segment
   = Argument
   | Local
@@ -23,4 +25,10 @@ data Cmd
   | Not
   | Push Segment Int
   | Pop Segment Int
+  | Label T.Text
+  | Goto T.Text
+  | IfGoto T.Text
+  | Function T.Text Int
+  | Call T.Text Int
+  | Return
   deriving (Show, Eq)

@@ -30,22 +30,40 @@ segment =
         zeroArgCtr
         [Argument, Local, Static, Constant, This, That, Pointer, Temp]
 
-cmdParser :: Parser Cmd
-cmdParser = do
-  cmd <-
-    choice $
-      [twoArgCmd "push" Push, twoArgCmd "pop" Pop]
-        ++ fmap
-          zeroArgCtr
-          [Add, Sub, Neg, Eq, Gt, Lt, And, Or, Not]
-  return cmd
+identifier :: Parser T.Text
+identifier = cons <$> head <*> (many $ head <|> digitChar)
   where
-    twoArgCmd :: T.Text -> (Segment -> Int -> Cmd) -> Parser Cmd
-    twoArgCmd cmd ctr = do
+    head = choice [letterChar, char '_', char '.', char ':']
+    cons h r = T.pack $ h : r
+
+cmdParser :: Parser Cmd
+cmdParser =
+  choice $
+    [ stackCmd "push" Push,
+      stackCmd "pop" Pop,
+      flow "label" Label,
+      flow "goto" Goto,
+      flow "if-goto" IfGoto,
+      functionCall "function" Function,
+      functionCall "call" Call,
+      Return <$ (lexeme $ string "return")
+    ]
+      ++ fmap
+        zeroArgCtr
+        [Add, Sub, Neg, Eq, Gt, Lt, And, Or, Not]
+  where
+    stackCmd :: T.Text -> (Segment -> Int -> Cmd) -> Parser Cmd
+    stackCmd cmd ctr = do
       void . lexeme $ string cmd
       seg <- lexeme segment
       index <- lexeme L.decimal
       return $ ctr seg index
+    flow :: T.Text -> (T.Text -> Cmd) -> Parser Cmd
+    flow cmd ctr = ctr <$> ((lexeme $ string cmd) *> lexeme identifier)
+    functionCall :: T.Text -> (T.Text -> Int -> Cmd) -> Parser Cmd
+    functionCall cmd ctr = do
+      void . lexeme $ string cmd
+      ctr <$> lexeme identifier <*> lexeme L.decimal
 
 vmParser :: Parser [Cmd]
 vmParser = many $ scn *> lexeme cmdParser
