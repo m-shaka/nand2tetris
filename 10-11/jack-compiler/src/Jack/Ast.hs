@@ -6,11 +6,11 @@ type Identifier = T.Text
 
 data UnaryOp
   = UnaryMinus
-  | Neg
+  | Not
 
 instance Show UnaryOp where
   show UnaryMinus = "-"
-  show Neg = "~"
+  show Not = "~"
 
 data BinOp
   = Add
@@ -69,7 +69,7 @@ data SubroutineType
   = Constructor
   | Function
   | Method
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Type
   = TInt
@@ -96,7 +96,7 @@ newtype SubroutineDec
 data ClassVarType
   = Static
   | Field
-  deriving (Show)
+  deriving (Show, Eq)
 
 newtype ClassVarDec = ClassVarDec (ClassVarType, Type, [VarName]) deriving (Show)
 

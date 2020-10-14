@@ -1,6 +1,6 @@
 module Jack.Parser (parseJack) where
 
-import Control.Monad (MonadPlus, void, when)
+import Control.Monad (void, when)
 import qualified Data.Text as T
 import Data.Void (Void)
 import Jack.Ast
@@ -48,20 +48,20 @@ keywords :: [T.Text]
 keywords =
   primitiveTypes ++ nonTypeKeywords
 
-identifier :: T.Text -> Parser T.Text
-identifier errMsg = try . lexeme $ do
+identifier :: String -> [T.Text] -> Parser T.Text
+identifier errMsg keywords = try . lexeme $ do
   i <- cons <$> head <*> (many $ head <|> digitChar)
-  when (i `elem` keywords) $ fail "keywords cannot be used as variable name."
+  when (i `elem` keywords) $ fail errMsg
   pure i
   where
     head = choice [letterChar, char '_']
     cons h r = T.pack $ h : r
 
 varName :: Parser T.Text
-varName = identifier "keywords cannot be used as variable name."
+varName = identifier "keywords cannot be used as variable name." keywords
 
 typeName :: Parser T.Text
-typeName = identifier "keywords cannot be used as type name."
+typeName = identifier "keywords cannot be used as type name." nonTypeKeywords
 
 semicolon :: Parser ()
 semicolon = void $ char ';'
@@ -107,7 +107,7 @@ unaryOp =
   lexeme . choice $
     fmap
       (\op -> op <$ (string . T.pack . show $ op))
-      [UnaryMinus, Neg]
+      [UnaryMinus, Not]
 
 binOp :: Parser BinOp
 binOp =
