@@ -39,6 +39,18 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
+        var int shiftedX, sum, i;
+        let sum = 0;
+        let shiftedX = x;
+        let i = 0;
+        while (i < 16) {
+            if (Math.bit(y, i)) {
+                let sum = sum + shiftedX;
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let i = i + 1;
+        }
+        return sum;
     }
 
     /** Returns the integer part of x/y.
@@ -69,6 +81,9 @@ class Math {
             return a;
         }
         return b;
+    }
 
+    function bool bit(int x, int j) {
+        return (x & twoToThe[j]) = twoToThe[j];
     }
 }
