@@ -188,6 +188,11 @@ class Output {
             let cursorCol = cursorCol - 64;
             let i = i + 1;
         }
+        if (cursorCol < 0) {
+            let cursorCol = 64 + cursorCol;
+            let i = i - 1;
+        }
+
         let cursorRow = i;
         if (cursorRow > 22) {
             let cursorRow = cursorRow - 23;
@@ -246,6 +251,20 @@ class Output {
     /** Displays the given integer starting at the cursor location,
      *  and advances the cursor appropriately. */
     function void printInt(int i) {
+        var int len, div;
+        var String s;
+        let len = 1;
+        let div = Math.abs(i) / 10;
+        while (div > 0) {
+            let len = len + 1;
+            let div = div / 10;
+        }
+        if (i < 0) {
+            let len = len + 1;
+        }
+        let s = String.new(len);
+        do s.setInt(i);
+        do Output.printString(s);
         return;
     }
 
@@ -257,6 +276,7 @@ class Output {
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        do Output.moveCursor(cursorRow, cursorCol - 1);
         return;
     }
 }
