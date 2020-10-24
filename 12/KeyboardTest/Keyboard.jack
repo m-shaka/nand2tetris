@@ -63,7 +63,46 @@ class Keyboard {
      * and returns its value. Also handles user backspaces.
      */
     function String readLine(String message) {
-        return "";
+        var int capacity, i;
+        var char c;
+        var String res, tmpStr;
+        do Output.printString(message);
+        let c = 0;
+        let capacity = 1;
+        let res = String.new(capacity);
+        while (true) {
+            let c = Keyboard.readChar();
+            if (c = String.newLine()) {
+                do Output.println();
+                return res;
+            }
+            if ((c = String.backSpace()) & (res.length() > 0)) {
+                do res.eraseLastChar();
+                if (capacity > (res.length() * 3)) {
+                    let capacity = Math.max(capacity / 3, 1);
+                    let tmpStr = String.new(capacity);
+                    let i = 0;
+                    while (i < res.length()) {
+                        do tmpStr.appendChar(res.charAt(i));
+                        let i = i + 1;
+                    }
+                    let res = tmpStr;
+                }
+            } else {
+                if (capacity = res.length()) {
+                    let capacity = capacity + capacity;
+                    let tmpStr = String.new(capacity);
+                    let i = 0;
+                    while (i < res.length()) {
+                        do tmpStr.appendChar(res.charAt(i));
+                        let i = i + 1;
+                    }
+                    let res = tmpStr;
+                }
+                do res.appendChar(c);
+            }
+        }
+        return res;
     }
 
     /**
