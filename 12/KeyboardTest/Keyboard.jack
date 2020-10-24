@@ -80,24 +80,26 @@ class Keyboard {
                 do res.eraseLastChar();
                 if (capacity > (res.length() * 3)) {
                     let capacity = Math.max(capacity / 3, 1);
-                    let tmpStr = String.new(capacity);
+                    let tmpStr = res;
+                    let res = String.new(capacity);
                     let i = 0;
-                    while (i < res.length()) {
-                        do tmpStr.appendChar(res.charAt(i));
+                    while (i < tmpStr.length()) {
+                        do res.appendChar(tmpStr.charAt(i));
                         let i = i + 1;
                     }
-                    let res = tmpStr;
+                    do tmpStr.dispose();
                 }
             } else {
                 if (capacity = res.length()) {
                     let capacity = capacity + capacity;
-                    let tmpStr = String.new(capacity);
+                    let tmpStr = res;
+                    let res = String.new(capacity);
                     let i = 0;
-                    while (i < res.length()) {
-                        do tmpStr.appendChar(res.charAt(i));
+                    while (i < tmpStr.length()) {
+                        do res.appendChar(tmpStr.charAt(i));
                         let i = i + 1;
                     }
-                    let res = tmpStr;
+                    do tmpStr.dispose();
                 }
                 do res.appendChar(c);
             }
