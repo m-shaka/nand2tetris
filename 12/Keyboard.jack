@@ -116,6 +116,6 @@ class Keyboard {
     function int readInt(String message) {
         var String s;
         let s = Keyboard.readLine(message);
-        return String.intValue(s);
+        return s.intValue();
     }
 }
