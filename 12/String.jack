@@ -90,26 +90,30 @@ class String {
         return v;
     }
 
+    method void setInt_(int val) {
+        var int lastDigit, c;
+        var String res;
+        let lastDigit = val - ((val / 10) * 10);
+        let c = 48 + lastDigit;
+        if (val < 10) {
+            do appendChar(c);
+            return;
+        }
+        do setInt_(val / 10);
+        do appendChar(c);
+        return;
+    }
     /** Sets this string to hold a representation of the given value. */
     method void setInt(int val) {
-        var int absVal, divider, tmp, crntPos;
-        let crntPos = 0;
-        if (val < 0) {
-            do setCharAt(crntPos, 45);
-            let crntPos = crntPos + 1;
+        var bool isNeg;
+        let isNeg = val < 0;
+        if (isNeg) {
+            let items[0] = 45;
+            let nextPos = 1;
+        } else {
+            let nextPos = 0;
         }
-        let absVal = Math.abs(val);
-        let divider = 10000;
-        while (divider > 0) {
-            let tmp = Math.divide(absVal, divider);
-            if ((tmp > 0) | ~(divider = 10000)) {
-                do setCharAt(crntPos, 48 + tmp);
-                let crntPos = crntPos + 1;
-            }
-            let absVal = absVal - (tmp * divider);
-            let divider = Math.divide(divider, 10);
-        }
-        let nextPos = crntPos;
+        do setInt_(Math.abs(val));
         return;
     }
 
