@@ -49,20 +49,21 @@ class Screen {
         return;
     }
 
+    function void updateLocation(int i, int mask) {
+        if (isBlack) {
+            let screenBase[i] = screenBase[i] | mask;
+        } else {
+            let screenBase[i] = screenBase[i] & ~mask;
+        }
+        return;
+    }
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
-        var int bit, mem, currentVal;
-        let bit = x;
-        while (bit > 15) {
-            let bit = bit - 16;
-        }
-        let mem = screenBase + (32 * y) + (x / 16);
-        let currentVal = Memory.peek(mem);
-        if (isBlack) {
-            do Memory.poke(mem, currentVal | twoToThe[bit]);
-        } else {
-            do Memory.poke(mem, currentVal & ~twoToThe[bit]);
-        }
+        var int quot, bit, address;
+        let quot = x / 16;
+        let bit = x - (quot * 16);
+        let address = (y * 32) + quot;
+        do Screen.updateLocation(address, twoToThe[bit]);
         return;
     }
 
@@ -107,22 +108,49 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
-        var int i, iSign, dy, diff;
+        var int i, dy, tmp;
         let dy = y2 - y1;
-        let i = 0;
-        let iSign = 1;
         if (dy < 0) {
-            let iSign = -1;
+            let tmp = y2;
+            let y2 = y1;
+            let y1 = tmp;
         }
+        if ((x2 - x1) < 0) {
+            let tmp = x2;
+            let x2 = x1;
+            let x1 = tmp;
+        }
+        let i = 0;
         let dy = Math.abs(dy);
         while (~(i > dy)) {
-            let diff = iSign * i;
-            do Screen.drawLine(x1, y1 + diff, x2, y1 + diff);
+            do Screen.drawHorizontal(x1, y1 + i, x2);
             let i = i + 1;
         }
         return;
     }
 
+    function void drawHorizontal(int x1, int y1, int x2) {
+        var int maskStart, maskEnd, indexStart, indexEnd, indexRow;
+        let indexStart = x1 / 16;
+        let indexEnd = x2 / 16;
+        let maskStart = ~(twoToThe[x1 - (indexStart * 16)] - 1);
+        let indexRow = y1 * 32;
+        let maskEnd =twoToThe[x2 - (indexEnd * 16) + 1] - 1;
+
+        if (indexStart = indexEnd) {
+            do Screen.updateLocation(indexStart + indexRow, maskStart & maskEnd);
+            return;
+        }
+
+        do Screen.updateLocation(indexStart + indexRow, maskStart);
+        let indexStart = indexStart + 1;
+        while (indexStart < indexEnd) {
+            do Screen.updateLocation(indexStart + indexRow, -1);
+            let indexStart = indexStart + 1;
+        }
+        do Screen.updateLocation(indexEnd + indexRow, maskEnd);
+        return;
+    }
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
         var int dy, tempR, r2;
@@ -133,7 +161,7 @@ class Screen {
         let r2 = r * r;
         while (dy < (r + 1)) {
             let tempR = Math.sqrt(r2 - (dy * dy));
-            do Screen.drawLine(x - tempR, y + dy, x + tempR, y + dy);
+            do Screen.drawHorizontal(x - tempR, y + dy, x + tempR);
             let dy = dy + 1;
         }
         return;
