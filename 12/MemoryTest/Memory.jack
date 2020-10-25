@@ -9,9 +9,13 @@
  * consists of 32,768 words, each holding a 16-bit binary number.
  */
 class Memory {
+    static Array heapBase;
 
     /** Initializes the class. */
     function void init() {
+        let heapBase = 2048;
+        let heapBase[0] = 14335; // 16383 - 2048;
+        let heapBase[1] = null;
         return;
     }
 
@@ -33,12 +37,35 @@ class Memory {
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
     function int alloc(int size) {
-        return 0;
+        var Array seg;
+        var int block;
+        if (size < 1) {
+            return 5; // invalid memory size;
+        }
+        let seg = heapBase;
+        while (seg[0] < size) {
+            let seg = heapBase[1];
+            if (seg = null) {
+                return 6; // heap overflow;
+            }
+        }
+        let block = seg + (seg[0] - size);
+        let block[-1] = size + 1;
+        let seg[0] = seg[0] - (size + 1);
+        return block;
     }
 
     /** De-allocates the given object (cast as an array) by making
      *  it available for future allocations. */
     function void deAlloc(Array o) {
+        var Array seg, freeList;
+        let seg = o - 1;
+        let seg[1] = null;
+        let freeList = heapBase;
+        while (~(freeList[1] = null)) {
+            let freeList = freeList[1];
+        }
+        let freeList[1] = seg;
         return;
     }
 }
