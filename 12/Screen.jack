@@ -45,14 +45,17 @@ class Screen {
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
-        var int mask, mem, currentVal;
-        let mask = twoToThe[(x - (16 * (x / 16)))];
+        var int bit, mem, currentVal;
+        let bit = x;
+        while (bit > 15) {
+            let bit = bit - 16;
+        }
         let mem = screenBase + (32 * y) + (x / 16);
         let currentVal = Memory.peek(mem);
         if (isBlack) {
-            do Memory.poke(mem, currentVal | mask);
+            do Memory.poke(mem, currentVal | twoToThe[bit]);
         } else {
-            do Memory.poke(mem, currentVal & ~mask);
+            do Memory.poke(mem, currentVal & ~twoToThe[bit]);
         }
         return;
     }
